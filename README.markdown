@@ -16,14 +16,14 @@ Imagine you have a simple class that represents a `Person` object:
 
 ```java
 public class Person {
-	public Person(String name, int age) { ... }
+  public Person(String name, int age) { ... }
 	
-	public String getFirstName() { ... }
-	public void setFirstName(String firstName) { ... }
-	public String getLastName() { ... }
-	public void setLastName(String lastName) { ... }
-	public int getAge() { ... }
-	public void setAge(int age) { ... }
+  public String getFirstName() { ... }
+  public void setFirstName(String firstName) { ... }
+  public String getLastName() { ... }
+  public void setLastName(String lastName) { ... }
+  public int getAge() { ... }
+  public void setAge(int age) { ... }
 ```
 
 It's pretty basic, and I've removed all the method bodies for readability. Supposed you have a bazillion Exceptions that you need to test for. It would be very cumbersome to surround each test with a `try-catch` block. Do I need to check if the constructor throws an exception? What about a NullPointerException? IllegalArgumentException? So many unanswered questions!
@@ -32,35 +32,35 @@ With Jester, just write happy code (remember, I'm a Ruby developer - forced to w
 
 ```java
 public class PersonTester extends TestSuite {
-	private Person seth;
-	private Person joe;
+  private Person seth;
+  private Person joe;
 	
-	public void setup() {
-		seth = new Person("Seth Vargo", 20);
-		joe = new Person("Joe Frick", 21);
-	}
+  public void setup() {
+    seth = new Person("Seth Vargo", 20);
+    joe = new Person("Joe Frick", 21);
+  }
 	
-	public void testFirstName() {
-		assertEqual("Seth", seth, "getFirstName");
-		assertEqual("Joe", joe, "getFirstName");
-		
-		assertNotEqual("Seth", joe, "getFirstName");
-		assertNotEqual("Joe", seth, "getFirstName");
-	}
+  public void testFirstName() {
+    assertEqual("Seth", seth, "getFirstName");
+    assertEqual("Joe", joe, "getFirstName");
+    
+    assertNotEqual("Seth", joe, "getFirstName");
+    assertNotEqual("Joe", seth, "getFirstName");
+  }
 	
-	public void testLastName() {
-		assertEqual("Vargo", seth, "getLastName");
-		assertEqual("Frick", joe, "getLastName");
-	}
+  public void testLastName() {
+    assertEqual("Vargo", seth, "getLastName");
+    assertEqual("Frick", joe, "getLastName");
+  }
 	
-	public void tearDown() {
-		seth = null;
-		joe = null;
-	}
+  public void tearDown() {
+    seth = null;
+    joe = null;
+  }
 	
-	public static void main(String args[]) {
-		runTests(new PersonTester());
-	}
+  public static void main(String args[]) {
+    runTests(new PersonTester());
+  }
 }
 ```
 
