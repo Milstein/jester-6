@@ -1,3 +1,5 @@
+import com.sethvargo.jester.TestSuite;
+
 
 public class PersonTester extends TestSuite {
 	private Person seth;

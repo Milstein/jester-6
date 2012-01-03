@@ -1,3 +1,4 @@
+package com.sethvargo.jester;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -100,7 +101,7 @@ public class Test {
 			failureMessage = "[tester error]: method " + methodSignature() + " does not exist";
 		} catch(InvocationTargetException e) {
 			// errors produced by the actual code
-			e.printStackTrace();
+			failureMessage = "[error]: method " + methodWithParameters() + " expected <" + toString(expectedResult) + ">, but got <" + e.getTargetException().getClass().toString() + ">";
 		} catch(Exception e) {
 			failureMessage = "[tester error]: uncaught exception " + e.getLocalizedMessage();
 		}

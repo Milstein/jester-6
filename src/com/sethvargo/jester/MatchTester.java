@@ -1,3 +1,4 @@
+package com.sethvargo.jester;
 import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 

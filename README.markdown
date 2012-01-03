@@ -37,7 +37,7 @@ public static void main(String args[]) {
 }
 ```
 
- - Write tests! For a full list of methods and documentation, see the [Wiki](wiki).
+ - Write tests! For a full list of methods and documentation, see the [Wiki](jester/wiki).
 
 Features
 --------

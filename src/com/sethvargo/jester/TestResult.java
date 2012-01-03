@@ -1,3 +1,4 @@
+package com.sethvargo.jester;
 
 public class TestResult {
 	private Object result;

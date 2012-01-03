@@ -1,3 +1,4 @@
+package com.sethvargo.jester;
 import java.lang.reflect.*;
 
 public class ExceptionTester implements Tester {

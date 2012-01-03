@@ -1,3 +1,4 @@
+package com.sethvargo.jester;
 import java.lang.reflect.Method;
 
 public interface Tester {
