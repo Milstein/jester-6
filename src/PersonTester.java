@@ -8,6 +8,11 @@ public class PersonTester extends TestSuite {
 		rick = new Person("Richard Stormer", 40);
 	}
 	
+	public void tearDown() {
+		seth = null;
+		rick = null;
+	}
+	
 	public void testFirstName() {
 		assertEqual("Seth", seth, "getFirstName");
 		assertEqual("Richard", rick, "getFirstName");
@@ -26,11 +31,6 @@ public class PersonTester extends TestSuite {
 	
 	public void testNotThrowable() {
 		assertNotException(seth, "dontThrowSomething");
-	}
-	
-	public void tearDown() {
-		seth = null;
-		rick = null;
 	}
 	
 	public static void main(String args[]) {

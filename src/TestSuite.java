@@ -7,7 +7,7 @@ import java.util.HashMap;
 public abstract class TestSuite {
 	private HashMap<String, ArrayList<Test>> testsMap = new HashMap<String, ArrayList<Test>>();
 	private ArrayList<String> ignoredMethods = new ArrayList<String>(Arrays.asList(
-		"main", "setup", "tearDown", "test", "run", "runTests",
+		"main", "setup", "tearDown", "beforeEach", "afterEach", "test", "run", "runTests",
 		"assertEqual", "assertNotEqual", "assertNull", "assertNotNull", "assertException", "assertNotException", "assertMatches", "assertNotMatches",
 		"wait", "equals", "toString", "hashCode", "getClass", "notify", "notifyAll"
 	));
@@ -51,6 +51,7 @@ public abstract class TestSuite {
 			String methodName = method.getName();
 			if(!ignoredMethods.contains(method.getName())) {
 				try {
+					beforeEach();
 					method.invoke(this);
 					
 					ArrayList<Test> tests = testsMap.get(methodName);
@@ -73,6 +74,7 @@ public abstract class TestSuite {
 						System.out.println(failure);
 					
 					printStats(tests.size(), failed);
+					afterEach();
 				} catch (IllegalArgumentException e) {
 					System.out.println(e.getLocalizedMessage());
 					e.printStackTrace();
@@ -89,6 +91,8 @@ public abstract class TestSuite {
 	
 	public void setup() {};
 	public void tearDown() {};
+	public void beforeEach() {};
+	public void afterEach() {};
 	
 	public static void runTests(TestSuite testSuite) {
 		testSuite.setup();
