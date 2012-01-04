@@ -56,25 +56,29 @@ public abstract class TestSuite {
 					method.invoke(this);
 					
 					ArrayList<Test> tests = testsMap.get(methodName);
-					ArrayList<String> failures = new ArrayList<String>();
-					int failed = 0;
 					
-					printHeader(methodName);
-					
-					for(Test test : tests) {
-						if(!test.passed()) {
-							failures.add(test.getFailureMessage());
-							System.out.print("F");
-						} else {
-							System.out.print(".");
+					if(tests != null) {
+						ArrayList<String> failures = new ArrayList<String>();
+						
+						printHeader(methodName);
+
+						for(Test test : tests) {
+							test.run();
+							if(!test.passed()) {
+								failures.add(test.getFailureMessage());
+								System.out.print("F");
+							} else {
+								System.out.print(".");
+							}
 						}
+					
+						System.out.println("\n");
+						for(String failure : failures)
+							System.out.println(failure);
+						
+						printStats(tests.size(), failures.size());
 					}
 					
-					System.out.println("\n");
-					for(String failure : failures)
-						System.out.println(failure);
-					
-					printStats(tests.size(), failed);
 					afterEach();
 				} catch (IllegalArgumentException e) {
 					System.out.println(e.getLocalizedMessage());

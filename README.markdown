@@ -39,6 +39,37 @@ public static void main(String args[]) {
 
  - Write tests! For a full list of methods and documentation, see the [Wiki](jester/wiki).
 
+Gotcha
+------
+Jester does not execute tests as you might expect!
+
+```java
+public testSomething() {
+  MyObject obj = ...;
+  ArrayList<Thing> things = ...;
+  
+  for(thing : things) {
+    obj.setThings(things);
+    assertEqual(things, obj, "getThings");
+  }
+}
+```
+
+This will fail because those tests are not run until call to runTests. As such, `obj.things` will only hold the most recent value. You, instead, must create another object to pass as a reference (or just clone it):
+
+```java
+public testSomething() {
+  MyObject obj = ...;
+  ArrayList<Thing> things = ...;
+  
+  for(thing : things) {
+    MyObject temp = obj.clone();
+    temp.setThings(things);
+    assertEqual(things, temp, "getThings");
+  }
+}
+```
+
 Features
 --------
  - Super simple setup (see above)

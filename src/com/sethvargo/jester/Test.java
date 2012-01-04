@@ -26,14 +26,14 @@ public class Test {
 	
 	public Boolean passed() {
 		if(testResult == null)
-			run();
+			throw new IllegalArgumentException("You have not run the test yet!");
 		
 		return testResult.passed();
 	}
 
 	public String getFailureMessage() {
 		if(testResult == null)
-			run();
+			throw new IllegalArgumentException("You have not run the test yet!");
 		
 		if(testResult.passed())
 			throw new IllegalArgumentException("Cannot call failureMessage on a test that passed!");
@@ -41,7 +41,7 @@ public class Test {
 		if(failureMessage != null)
 			return failureMessage;
 		
-		return "[failed]: " + methodWithParameters() + " expected <" + toString(expectedResult) + ">, but got <" + toString(actualResult) + ">";
+		return "[failed]: " + methodWithParameters() + " expected " + (tester.getClass().toString().indexOf("Not") == -1 ? "" : "NOT ") + "<" + toString(expectedResult) + ">, but got <" + toString(actualResult) + ">";
 	}
 	
 	private String methodSignature() {
@@ -76,34 +76,30 @@ public class Test {
 		return argClasses;
 	}
 	
-	private void run() {
-		testResult = new TestResult(null, false);
+	public void run() {
+		PrintStream printStreamOriginal = System.out;
+		testResult = new TestResult(expectedResult, false);
 		
 		try {
-			PrintStream printStreamOriginal = System.out;
-			System.setOut(new PrintStream(new OutputStream(){
-				public void write(int b) {
-					
-				}
-			}));
-			
+			//System.setOut(new PrintStream(new OutputStream(){ public void write(int b) { } }));
+
 			testResult = tester.test(expectedResult, target, getMethod(), args);
 			actualResult = testResult.getResult();
-			
-			System.setOut(printStreamOriginal);
 		} catch(IllegalArgumentException e) {
-			failureMessage = "[tester error]: illegal arguments passed to " + methodSignature();
+			failureMessage = "[tester error]: illegal number or type of arguments passed to " + methodSignature();
+		} catch(NoSuchMethodException e) {
+			failureMessage = "[tester error]: method " + methodSignature() + " does not exist";
 		} catch(IllegalAccessException e) {
 			failureMessage = "[tester error]: tried to access private or protected method " + methodSignature();
 		} catch(SecurityException e) {
-			failureMessage = "[tester error]: tried accessing private method";
-		} catch(NoSuchMethodException e) {
-			failureMessage = "[tester error]: method " + methodSignature() + " does not exist";
+			failureMessage = "[tester error]: tried accessing private or protected method" + methodSignature();
 		} catch(InvocationTargetException e) {
 			// errors produced by the actual code
 			failureMessage = "[error]: method " + methodWithParameters() + " expected <" + toString(expectedResult) + ">, but got <" + e.getTargetException().getClass().toString() + ">";
 		} catch(Exception e) {
 			failureMessage = "[tester error]: uncaught exception " + e.getLocalizedMessage();
+		} finally {
+			System.setOut(printStreamOriginal);
 		}
 	}
 	
