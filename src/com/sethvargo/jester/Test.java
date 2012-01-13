@@ -3,6 +3,8 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Test {
 	private Tester tester;
@@ -78,11 +80,11 @@ public class Test {
 	
 	public void run() {
 		PrintStream printStreamOriginal = System.out;
-		testResult = new TestResult(expectedResult, false);
+		System.setOut(new PrintStream(new OutputStream(){ public void write(int b) { } }));
 		
-		try {
-			//System.setOut(new PrintStream(new OutputStream(){ public void write(int b) { } }));
+		testResult = new TestResult(expectedResult, false);
 
+		try {
 			testResult = tester.test(expectedResult, target, getMethod(), args);
 			actualResult = testResult.getResult();
 		} catch(IllegalArgumentException e) {
@@ -98,6 +100,7 @@ public class Test {
 			failureMessage = "[error]: method " + methodWithParameters() + " expected <" + toString(expectedResult) + ">, but got <" + e.getTargetException().getClass().toString() + ">";
 		} catch(Exception e) {
 			failureMessage = "[tester error]: uncaught exception " + e.getLocalizedMessage();
+			e.printStackTrace();
 		} finally {
 			System.setOut(printStreamOriginal);
 		}
@@ -108,6 +111,17 @@ public class Test {
 	}
 	
 	private String toString(Object obj) {
-		return obj == null ? "null" : obj.toString();
+		if(obj == null)
+			return "null";
+		
+		if(obj.getClass().isArray()) {
+			ArrayList<Object> objectList = new ArrayList<Object>();
+			objectList.addAll(Arrays.asList(obj));
+			Object[] objs = objectList.toArray();
+			String result = Arrays.deepToString(objs);
+			return result.substring(1, result.length()-1);
+		}
+		
+		return obj.toString();
 	}
 }

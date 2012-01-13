@@ -2,9 +2,9 @@ package com.sethvargo.jester;
 
 public class TestResult {
 	private Object result;
-	private Boolean passed;
+	private boolean passed;
 	
-	public TestResult(Object result, Boolean passed) {
+	public TestResult(Object result, boolean passed) {
 		this.result = result;
 		this.passed = passed;
 	}

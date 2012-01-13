@@ -16,7 +16,7 @@ public abstract class TestSuite {
 	public void assertEqual(Object expectedValue, Object target, String methodName, Object... args) {
 		addTest(new Test(new EqualityTester(), expectedValue, target, methodName, args));
 	}
-	
+
 	public void assertNotEqual(Object expectedValue, Object target, String methodName, Object... args) {
 		addTest(new Test(new NotEqualityTester(), expectedValue, target, methodName, args));
 	}
