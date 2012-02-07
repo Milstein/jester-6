@@ -26,6 +26,14 @@ public class Test {
 		this.args = args;
 	}
 	
+	public Test(Tester tester, Object expectedResult, Object target) {
+		this.tester = tester;
+		this.expectedResult = expectedResult;
+		this.target = target;
+		this.methodName = "ObjectEqualityTest"; // this is a hack
+		this.args = new Object[0];
+	}
+	
 	public Boolean passed() {
 		if(testResult == null)
 			throw new IllegalArgumentException("You have not run the test yet!");
@@ -85,7 +93,12 @@ public class Test {
 		testResult = new TestResult(expectedResult, false);
 
 		try {
-			testResult = tester.test(expectedResult, target, getMethod(), args);
+			if(tester instanceof ObjectEqualityTester) {
+				testResult = ((ObjectEqualityTester)tester).test(expectedResult, target);
+			} else {
+				testResult = tester.test(expectedResult, target, getMethod(), args);	
+			}
+			
 			actualResult = testResult.getResult();
 		} catch(IllegalArgumentException e) {
 			failureMessage = "[tester error]: illegal number or type of arguments passed to " + methodSignature();

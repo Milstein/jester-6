@@ -6,19 +6,24 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public abstract class TestSuite {
+	protected String[] userTypes;
 	private HashMap<String, ArrayList<Test>> testsMap = new HashMap<String, ArrayList<Test>>();
 	private ArrayList<String> ignoredMethods = new ArrayList<String>(Arrays.asList(
 		"main", "setup", "tearDown", "beforeEach", "afterEach", "test", "run", "runTests",
-		"assertEqual", "assertNotEqual", "assertNull", "assertNotNull", "assertException", "assertNotException", "assertMatches", "assertNotMatches",
+		"assertEqual", "assertNotEqual", "assertNull", "assertNotNull", "assertTrue", "assertFalse", "assertException", "assertNotException", "assertMatches", "assertNotMatches",
 		"wait", "equals", "toString", "hashCode", "getClass", "notify", "notifyAll"
 	));
 	
 	public void assertEqual(Object expectedValue, Object target, String methodName, Object... args) {
-		addTest(new Test(new EqualityTester(), expectedValue, target, methodName, args));
+		addTest(new Test(new EqualityTester(userTypes), expectedValue, target, methodName, args));
+	}
+	
+	public void assertEqual(Object expectedValue, Object target) {
+		addTest(new Test(new ObjectEqualityTester(userTypes), expectedValue, target));
 	}
 
 	public void assertNotEqual(Object expectedValue, Object target, String methodName, Object... args) {
-		addTest(new Test(new NotEqualityTester(), expectedValue, target, methodName, args));
+		addTest(new Test(new NotEqualityTester(userTypes), expectedValue, target, methodName, args));
 	}
 	
 	public void assertNull(Object target, String methodName, Object... args) {
@@ -28,6 +33,14 @@ public abstract class TestSuite {
 	public void assertNotNull(Object target, String methodName, Object... args) {
 		addTest(new Test(new NotNullityTester(), null, target, methodName, args));
 	}
+	
+	public void assertTrue(Object target, String methodName, Object... args) {
+		addTest(new Test(new VerityTester(), true, target, methodName, args));
+	}
+	
+	public void assertFalse(Object target, String methodName, Object... args) {
+		addTest(new Test(new VerityTester(), false, target, methodName, args));
+	}	
 	
 	public void assertException(Object exception, Object target, String methodName, Object... args) {
 		addTest(new Test(new ExceptionTester(), exception, target, methodName, args));
@@ -87,6 +100,7 @@ public abstract class TestSuite {
 					System.out.println(e.getLocalizedMessage());
 					e.printStackTrace();
 				} catch (InvocationTargetException e) {
+					System.out.println(e.getTargetException());
 					System.out.println(e.getLocalizedMessage());
 					e.printStackTrace();
 				}

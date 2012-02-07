@@ -1,62 +1,62 @@
 package com.sethvargo.jester;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class EqualityTester implements Tester {
+public class ObjectEqualityTester implements Tester {
 	private String[] userTypes;
 	
-	public EqualityTester(String userTypes[]) {
+	public ObjectEqualityTester(String[] userTypes) {
 		this.userTypes = userTypes;
 	}
 	
-	public TestResult test(Object expectedResult, Object target, Method method, Object[] args) throws Exception {
-		return test(expectedResult, target, method, null, args);
-	}
-	
-	public TestResult test(Object expectedResult, Object target, Method method, String[] userTypes, Object[] args) throws Exception {
+	public TestResult test(Object expectedResult, Object target) throws Exception {
 		if(expectedResult == null)
-			throw new IllegalArgumentException("expectedResult cannot be null. Use assertNull(...) instead!");
+			return new TestResult(expectedResult == target, expectedResult == target);
 
-		Object result = method.invoke(target, args);
 		boolean passed = false;
 		if(expectedResult.getClass().isPrimitive()) {
 			// primitives are compared using ==
-			passed = expectedResult == result;
+			passed = expectedResult == target;
 		} else if(expectedResult instanceof boolean[]) {
-			passed = Arrays.equals((boolean[])expectedResult, (boolean[])result);
+			passed = Arrays.equals((boolean[])expectedResult, (boolean[])target);
 		} else if(expectedResult instanceof byte[]) {
-			passed = Arrays.equals((byte[])expectedResult, (byte[])result);
+			passed = Arrays.equals((byte[])expectedResult, (byte[])target);
 		} else if(expectedResult instanceof char[]) {
-			passed = Arrays.equals((char[])expectedResult, (char[])result);
+			passed = Arrays.equals((char[])expectedResult, (char[])target);
 		} else if(expectedResult instanceof short[]) {
-			passed = Arrays.equals((short[])expectedResult, (short[])result);
+			passed = Arrays.equals((short[])expectedResult, (short[])target);
 		} else if(expectedResult instanceof int[]) {
-			passed = Arrays.equals((int[])expectedResult, (int[])result);
+			passed = Arrays.equals((int[])expectedResult, (int[])target);
 		} else if(expectedResult instanceof long[]) {
-			passed = Arrays.equals((long[])expectedResult, (long[])result);
+			passed = Arrays.equals((long[])expectedResult, (long[])target);
 		} else if(expectedResult instanceof float[]) {
-			passed = Arrays.equals((float[])expectedResult, (float[])result);
+			passed = Arrays.equals((float[])expectedResult, (float[])target);
 		} else if(expectedResult instanceof double[]) {
-			passed = Arrays.equals((double[])expectedResult, (double[])result);
+			passed = Arrays.equals((double[])expectedResult, (double[])target);
 		} else if(expectedResult instanceof Object[]) {
 			// could be a multi-nested array
-			passed = Arrays.deepEquals((Object[]) expectedResult, (Object[]) result);
-		} else if(expectedResult instanceof Collection) {
+			passed = Arrays.deepEquals((Object[]) expectedResult, (Object[]) target);
+		} else if(expectedResult instanceof Collection) { 
 			// mainly for ArrayList<E> return types
 			// where E is an (unknown) user-defined type.
 			// Java sees result as an ArrayList<Object> and calls the Object.equals function
 			// we can't cast because we don't know E.
 			// use reflection to make sure the right method is being called.
-			Collection<?> expected = (Collection<?>)expectedResult;
-			Collection<?> theResult = (Collection<?>)result;
-			passed = deepEquals(expected, theResult);
+			Collection<?> exp = (Collection<?>)expectedResult;
+			Collection<?> res = (Collection<?>)target;
+			passed = deepEquals(exp, res);
 		} else {
-			passed = userEquals(expectedResult, result);
+			passed = userEquals(expectedResult, target);
 		}
 
-		return new TestResult(result, passed);
+		return new TestResult(target, passed);
+	}
+
+	public TestResult test(Object expectedValue, Object target, Method method, Object[] args) throws Exception {
+		throw new RuntimeException("You cannot use those parameters with this kind of tester!");
 	}
 	
 	private boolean userEquals(Object expected, Object result) throws Exception	{
