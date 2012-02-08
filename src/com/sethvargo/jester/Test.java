@@ -57,7 +57,7 @@ public class Test {
 	private String methodSignature() {
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < args.length; i++) {
-			sb.append(args[i].getClass().getSimpleName());
+			sb.append(args[i] == null ? null : args[i].getClass().getSimpleName());
 			if(i != args.length-1) {
 				sb.append(", ");
 			}
@@ -66,10 +66,15 @@ public class Test {
 		return methodName + "(" + sb.toString() + ")";
 	}
 	
-	private String methodWithParameters() {
+	private String methodWithParameters() {		
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < args.length; i++) {
-			sb.append(args[i]);
+			if(args[i] instanceof String) {
+				sb.append("\"" + args[i].toString() + "\"");
+			} else {
+				sb.append(args[i].toString());
+			}
+			
 			if(i != args.length-1) {
 				sb.append(", ");
 			}
@@ -81,7 +86,7 @@ public class Test {
 	private Class<?>[] argClasses(Object... args) {
 		Class<?>[] argClasses = new Class<?>[args.length];
 		for(int i = 0; i < args.length; i++) {
-			argClasses[i] = args[i].getClass();
+			argClasses[i] = (args[i] == null) ? Object.class : args[i].getClass();
 		}
 		return argClasses;
 	}
@@ -93,6 +98,9 @@ public class Test {
 		testResult = new TestResult(expectedResult, false);
 
 		try {
+			// if the target is a String, it's actually a Class
+			target = (target instanceof String) ? Class.forName((String)target) : target;
+			
 			if(tester instanceof ObjectEqualityTester) {
 				testResult = ((ObjectEqualityTester)tester).test(expectedResult, target);
 			} else {
@@ -108,6 +116,8 @@ public class Test {
 			failureMessage = "[tester error]: tried to access private or protected method " + methodSignature();
 		} catch(SecurityException e) {
 			failureMessage = "[tester error]: tried accessing private or protected method" + methodSignature();
+		} catch(ClassNotFoundException e) {
+			failureMessage = "[tester error]: class does not exist" + methodSignature();
 		} catch(InvocationTargetException e) {
 			// errors produced by the actual code
 			failureMessage = "[error]: method " + methodWithParameters() + " expected <" + toString(expectedResult) + ">, but got <" + e.getTargetException().getClass().toString() + ">";
@@ -120,6 +130,9 @@ public class Test {
 	}
 	
 	private Method getMethod() throws Exception {
+		if(target instanceof Class)
+			return ((Class<?>)target).getMethod(methodName, argClasses(args));
+
 		return target.getClass().getMethod(methodName, argClasses(args));
 	}
 	

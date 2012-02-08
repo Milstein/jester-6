@@ -12,10 +12,6 @@ public class EqualityTester implements Tester {
 	}
 	
 	public TestResult test(Object expectedResult, Object target, Method method, Object[] args) throws Exception {
-		return test(expectedResult, target, method, null, args);
-	}
-	
-	public TestResult test(Object expectedResult, Object target, Method method, String[] userTypes, Object[] args) throws Exception {
 		if(expectedResult == null)
 			throw new IllegalArgumentException("expectedResult cannot be null. Use assertNull(...) instead!");
 
